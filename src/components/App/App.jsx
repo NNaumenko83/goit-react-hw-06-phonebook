@@ -14,11 +14,7 @@ const App = () => {
   const filterValue = useSelector(getFilterValue);
   const dispath = useDispatch();
 
-  console.log(contacts.length);
-  console.log('filterValue:', filterValue);
-
   const addNewContact = ({ name, number }) => {
-    console.log(name, number);
     if (checkContact(name)) {
       alert(`${name} is already in contacts`);
       return;
