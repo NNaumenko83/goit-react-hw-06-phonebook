@@ -1,13 +1,16 @@
-import { useState } from 'react';
+// import { useState } from 'react';
+import { filterChange } from 'redux/filterSlice';
+import { useDispatch } from 'react-redux';
 
 const useInput = defaultValue => {
-  const [value, setValue] = useState(defaultValue);
+  const dispatch = useDispatch();
+  // const [value, setValue] = useState(defaultValue);
 
   const onInputChange = e => {
-    setValue(e.target.value);
+    dispatch(filterChange(e.target.value));
   };
 
-  return { value, onInputChange };
+  return { onInputChange };
 };
 
 export default useInput;

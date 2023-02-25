@@ -1,30 +1,29 @@
-import { nanoid } from 'nanoid';
 import ContactForm from '../ContactForm';
 import ContactList from '../ContactList';
 import Filter from '../Filter';
 import { ContactsTitle, Container } from './App.styled';
-import useLocalStorage from '../Hooks/useLocalStorage';
 import useInput from '../Hooks/useInput';
-
-const LS_KEY = 'contacts';
+import { useSelector, useDispatch } from 'react-redux';
+import { getContacts } from 'redux/contactsSlice';
+import { addContact, deleteContact } from 'redux/contactsSlice';
+import { getFilterValue } from 'redux/filterSlice';
 
 const App = () => {
-  const [contacts, setContacts] = useLocalStorage(LS_KEY, []);
   const input = useInput('');
+  const contacts = useSelector(getContacts);
+  const filterValue = useSelector(getFilterValue);
+  const dispath = useDispatch();
 
-  const addContact = ({ name, number }) => {
+  console.log(contacts.length);
+  console.log('filterValue:', filterValue);
+
+  const addNewContact = ({ name, number }) => {
+    console.log(name, number);
     if (checkContact(name)) {
       alert(`${name} is already in contacts`);
       return;
     }
-
-    const contact = {
-      id: nanoid(5),
-      name,
-      number,
-    };
-
-    setContacts(prevState => [contact, ...prevState]);
+    dispath(addContact(name, number));
   };
 
   const checkContact = checkedNameContact => {
@@ -38,29 +37,23 @@ const App = () => {
     );
   };
 
-  const deleteContact = contactId => {
-    setContacts(prevState =>
-      prevState.filter(contact => contact.id !== contactId)
-    );
+  const onDeleteContact = contactId => {
+    dispath(deleteContact(contactId));
   };
 
-  const normalizedFilter = input.value.toLocaleLowerCase();
+  const normalizedFilter = filterValue.toLocaleLowerCase();
   const visibleContats = getVisibleContacts(normalizedFilter);
 
   return (
     <Container>
       <h1>Phonebook</h1>
-
-      <ContactForm onSubmit={addContact} />
-
+      <ContactForm onSubmit={addNewContact} />
       <ContactsTitle>Contacts</ContactsTitle>
-
       <Filter {...input} />
-
       {contacts.length > 0 && (
         <ContactList
           contacts={visibleContats}
-          onDeleteContact={deleteContact}
+          onDeleteContact={onDeleteContact}
         />
       )}
     </Container>
